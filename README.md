@@ -42,13 +42,13 @@ source ./envs/homelab/envs.sh
 ```
 
 
-## Install MetalLB
+# Install MetalLB
 
 ```
 helmfile -l name=metallb sync
 ```
 
-## Install nginx ingress
+# Install nginx ingress
 
 ```
 kubectl create ns ingress-nginx || :
@@ -57,7 +57,7 @@ kubectl -n ingress-nginx create secret tls default-ssl-certificate --key privkey
 helmfile -l name=nginx-ingress sync
 ```
 
-## Install Harbor
+# Install Harbor
 
 ```
 kubectl create secret -n harbor-system generic harbor-ingress --from-file=ca.crt=ca.pem --from-file=tls.crt=fullchain.pem --from-file=tls.key=privkey.pem
@@ -92,7 +92,7 @@ helmfile -l namespace=concourse-system sync
 ```
 
 
-## Install Minio
+# Install Minio
 
 ```
 kubectl create ns minio-system
