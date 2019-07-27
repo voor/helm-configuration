@@ -1,0 +1,12 @@
+# Enable this if you're using https://github.com/coreos/prometheus-operator
+serviceMonitor:
+  enabled: false
+
+image:
+  tag: latest
+
+service:
+  labels:
+    app: prometheus-snmp-exporter
+    prometheus: monitoring
+    release: monitoring

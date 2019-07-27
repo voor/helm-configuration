@@ -1,0 +1,111 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  labels:
+    app: sidekiq-secrets
+  name: sidekiq-secrets
+  namespace: gitlab-system
+spec:
+  containers:
+    - command:
+        - sleep
+      args:
+        - 100000h
+      image: busybox:latest
+      name: configure
+      volumeMounts:
+        - mountPath: /config
+          name: sidekiq-config
+          readOnly: true
+        - mountPath: /init-config
+          name: init-sidekiq-secrets
+          readOnly: true
+        - mountPath: /init-secrets
+          name: sidekiq-secrets
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: default-token-hlsqm
+          readOnly: true
+  securityContext:
+    fsGroup: 1000
+    runAsUser: 1000
+  volumes:
+    - emptyDir:
+        medium: Memory
+      name: sidekiq-metrics
+    - name: sidekiq-config
+      projected:
+        defaultMode: 420
+        sources:
+          - configMap:
+              name: gitlab-sidekiq
+          - configMap:
+              name: gitlab-sidekiq-all-in-1
+    - name: init-sidekiq-secrets
+      projected:
+        defaultMode: 256
+        sources:
+          - secret:
+              items:
+                - key: secrets.yml
+                  path: rails-secrets/secrets.yml
+              name: gitlab-rails-secret
+          - secret:
+              items:
+                - key: token
+                  path: gitaly/gitaly_token
+              name: gitlab-gitaly-secret
+          - secret:
+              items:
+                - key: secret
+                  path: redis/password
+              name: gitlab-redis-secret
+          - secret:
+              items:
+                - key: postgresql-password
+                  path: postgres/psql-password
+              name: gitlab-postgres-postgresql
+          - secret:
+              items:
+                - key: registry-auth.key
+                  path: registry/gitlab-registry.key
+              name: gitlab-registry-secret
+          - secret:
+              items:
+                - key: connection
+                  path: objectstorage/lfs
+              name: objectstore
+          - secret:
+              items:
+                - key: connection
+                  path: objectstorage/artifacts
+              name: objectstore
+          - secret:
+              items:
+                - key: connection
+                  path: objectstorage/uploads
+              name: objectstore
+          - secret:
+              items:
+                - key: connection
+                  path: objectstorage/packages
+              name: objectstore
+          - secret:
+              items:
+                - key: provider
+                  path: omniauth/gitlab-pks-auth/provider
+              name: gitlab-pks-auth
+          - secret:
+              items:
+                - key: password
+                  path: smtp/smtp-password
+              name: smtp-password
+    - emptyDir:
+        medium: Memory
+      name: sidekiq-secrets
+    - emptyDir:
+        medium: Memory
+      name: etc-ssl-certs
+    - name: default-token-hlsqm
+      secret:
+        defaultMode: 420
+        secretName: default-token-hlsqm

@@ -1,0 +1,136 @@
+commonLabels:
+  prometheus: monitoring
+
+alertmanager:
+  # Configured only for troubleshooting.
+  ingress:
+    enabled: false
+
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    hosts:
+      - alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
+
+    ## Paths to use for ingress rules - one path should match the alertmanagerSpec.routePrefix
+    ##
+    paths:
+      - /
+
+    ## TLS configuration for Alertmanager Ingress
+    ## Secret must be manually created in the namespace
+    ##
+    tls:
+      - hosts:
+          - alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
+
+  alertmanagerSpec:
+    logFormat: logfmt
+    storage:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 10Gi
+        selector: {}
+
+prometheus:
+  # Configured only for troubleshooting.
+  ingress:
+    enabled: false
+
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    hosts:
+      - prometheus.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
+
+    ## Paths to use for ingress rules - one path should match the alertmanagerSpec.routePrefix
+    ##
+    paths:
+      - /
+
+    ## TLS configuration for Alertmanager Ingress
+    ## Secret must be manually created in the namespace
+    ##
+    tls:
+      - hosts:
+          - prometheus.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
+
+  prometheusSpec:
+    serviceMonitorSelectorNilUsesHelmValues: false
+
+    serviceMonitorSelector:
+      matchLabels:
+        prometheus: monitoring
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          storageClassName: {{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 50Gi
+        selector: {}
+    # logLevel: debug
+
+grafana:
+  adminPassword: {{ requiredEnv "GRAFANA_ADMIN_PASSWORD" }}
+  persistence:
+    enabled: true
+    size: 8Gi
+    storageClassName: {{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
+    accessModes:
+      - ReadWriteOnce
+  ingress:
+    enabled: true
+
+    annotations:
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    hosts:
+      - {{ requiredEnv "GRAFANA_DNS" }}
+    tls:
+      - hosts:
+          - {{ requiredEnv "GRAFANA_DNS" }}
+
+  grafana.ini:
+    server:
+      root_url: https://{{ requiredEnv "GRAFANA_DNS" }}
+      enable_gzip: true
+    paths:
+      # Standard locations from helm chart, dont change.
+      data: /var/lib/grafana/data
+      logs: /var/log/grafana
+      plugins: /var/lib/grafana/plugins
+      provisioning: /etc/grafana/provisioning
+    analytics:
+      check_for_updates: true
+    log:
+      mode: console
+    grafana_net:
+      url: https://{{ requiredEnv "GRAFANA_DNS" }}
+    auth.generic_oauth:
+      # uaac client add $GRAFANA_OIDC_CLIENT_ID --scope openid,roles,uaa.user,email \
+      #   --authorized_grant_types refresh_token,password,authorization_code \
+      #   --redirect_uri "https://${GRAFANA_DNS}/login/generic_oauth" \
+      #   --authorities clients.read,clients.secret,uaa.resource,scim.write,openid,scim.read \
+      #   --secret "$GRAFANA_OIDC_CLIENT_SECRET"
+      enabled: true
+      client_id: {{ requiredEnv "GRAFANA_OIDC_CLIENT_ID" }}
+      client_secret: {{ requiredEnv "GRAFANA_OIDC_CLIENT_SECRET" }}
+      scopes: openid email
+      auth_url: {{ requiredEnv "UAA_URL" }}/oauth/authorize
+      token_url: {{ requiredEnv "UAA_URL" }}/oauth/token
+      api_url: {{ requiredEnv "UAA_URL" }}/userinfo
+    users:
+      allow_sign_up: true
+      auto_assign_org: true
+      auto_assign_org_role: Admin
+    auth:
+      oauth_auto_login: true

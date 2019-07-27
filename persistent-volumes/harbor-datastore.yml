@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storage-mnt-registry
+  labels:
+    type: vmdk
+    storage: disk
+    name: storage-mnt-registry
+    pv: storage-mnt-registry
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  vsphereVolume:
+    volumePath: "[storage01] volumes/registry"
+    fsType: ext4
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: storage-mnt-registry
+  namespace: harbor-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      name: storage-mnt-registry
+      type: vmdk
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storage-mnt-chartmuseum
+  labels:
+    type: vmdk
+    storage: disk
+    name: storage-mnt-chartmuseum
+    pv: storage-mnt-chartmuseum
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  vsphereVolume:
+    volumePath: "[storage01] volumes/chartmuseum"
+    fsType: ext4
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: storage-mnt-chartmuseum
+  namespace: harbor-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      name: storage-mnt-chartmuseum
+      type: vmdk
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storage-mnt-jobservice
+  labels:
+    type: vmdk
+    storage: disk
+    name: storage-mnt-jobservice
+    pv: storage-mnt-jobservice
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  vsphereVolume:
+    volumePath: "[storage01] volumes/jobservice"
+    fsType: ext4
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: storage-mnt-jobservice
+  namespace: harbor-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      name: storage-mnt-jobservice
+      type: vmdk
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storage-mnt-database
+  labels:
+    type: vmdk
+    storage: disk
+    name: storage-mnt-database
+    pv: storage-mnt-database
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  vsphereVolume:
+    volumePath: "[storage01] volumes/database"
+    fsType: ext4
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: storage-mnt-database
+  namespace: harbor-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      name: storage-mnt-database
+      type: vmdk
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: storage-mnt-redis
+  labels:
+    type: vmdk
+    storage: disk
+    name: storage-mnt-redis
+    pv: storage-mnt-redis
+spec:
+  capacity:
+    storage: 20Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  vsphereVolume:
+    volumePath: "[storage01] volumes/redis"
+    fsType: ext4
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: storage-mnt-redis
+  namespace: harbor-system
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 20Gi
+  selector:
+    matchLabels:
+      name: storage-mnt-redis
+      type: vmdk

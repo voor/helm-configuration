@@ -1,0 +1,136 @@
+# Default values for fluentd.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+image:
+  repository: voor/fluent-plugin-grafana-loki
+  tag: local2
+  pullPolicy: IfNotPresent
+  # pullSecrets:
+  #   - secret1
+  #   - secret2
+
+# These are for elastic search, which we're not using this helm chart for.
+output:
+  host: ""
+  port: ""
+  scheme: ""
+  sslVersion: ""
+  buffer_chunk_limit: ""
+  buffer_queue_limit: ""
+
+env:
+  FLUENTD_CONF: "/etc/fluent/config.d/fluent.config"
+
+# Extra Environment Values - allows yaml definitions
+extraEnvVars:
+#  - name: VALUE_FROM_SECRET
+#    valueFrom:
+#      secretKeyRef:
+#        name: secret_name
+#        key: secret_key
+
+service:
+  type: ClusterIP
+  ports:
+    - name: "syslog"
+      protocol: TCP
+      containerPort: 6514
+    - name: "unifi-syslog"
+      protocol: UDP
+      containerPort: 514
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    additionalLabels:
+      prometheus: monitoring
+
+configMaps:
+  fluent.config: |
+    @include /etc/fluent/config.d/*.conf
+
+  general.conf: |
+    # Prevent fluentd from handling records containing its own logs. Otherwise
+    # it can lead to an infinite loop, when error in sending one message generates
+    # another message which also fails to be sent and so on.
+    <match fluentd.**>
+      @type null
+    </match>
+
+    # Used for health checking
+    <source>
+      @type http
+      port 9880
+      bind 0.0.0.0
+    </source>
+
+    <source>
+      @type syslog
+      port 514
+      bind 0.0.0.0
+      # protocol_type tcp
+      <transport udp>
+      </transport>
+      <parse>
+        message_format auto
+      </parse>
+      tag unifi
+    </source>
+
+    <source>
+      @type syslog
+      port 6514
+      bind 0.0.0.0
+      # protocol_type tcp
+      <transport tcp>
+      </transport>
+      <parse>
+        message_format auto
+      </parse>
+      # <transport tls>
+      #   ca_path /etc/pki/ca.pem
+      #   cert_path /etc/pki/cert.pem
+      #   private_key_path /etc/pki/key.pem
+      # </transport>
+      tag syslog
+    </source>
+
+    # Emits internal metrics to every minute, and also exposes them on port
+    # 24220. Useful for determining if an output plugin is retryring/erroring,
+    # or determining the buffer queue length.
+    <source>
+      @type monitor_agent
+      bind 0.0.0.0
+      port 24220
+      tag fluentd.monitor.metrics
+    </source>
+  system.conf: |-
+    <system>
+      root_dir /tmp/fluentd-buffers/
+    </system>
+  forward-input.conf: |
+    <source>
+      @type forward
+      port 24224
+      bind 0.0.0.0
+    </source>
+  output.conf: |
+    <match syslog.**>
+      @type loki
+      url "http://loki:3100"
+      extra_labels {"env":"{{ requiredEnv "CLUSTER_NAME" }}"}
+      label_keys 'deployment,group,host,ident'
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
+    </match>
+    <match unifi.**>
+      @type loki
+      url "http://loki:3100"
+      extra_labels {"env":"unifi"}
+      label_keys 'host,ident'
+      flush_interval 10s
+      flush_at_shutdown true
+      buffer_chunk_limit 1m
+    </match>

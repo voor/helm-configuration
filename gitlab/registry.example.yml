@@ -1,0 +1,7 @@
+s3:
+  bucket: gitlab-registry-storage
+  accesskey: $MINIO_ACCESS_KEY
+  secretkey: $MINIO_SECRET_KEY
+  region: us-east-1
+  regionendpoint: "https://$MINIO_DNS"
+  v4auth: true

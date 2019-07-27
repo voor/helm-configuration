@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: minio-objects
+  labels:
+    type: vmdk
+    storage: disk
+    name: minio-objects
+    pv: minio-objects
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  vsphereVolume:
+    volumePath: "[storage01] volumes/minio-objects"
+    fsType: ext4

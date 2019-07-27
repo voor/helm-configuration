@@ -1,0 +1,118 @@
+imageTag: 5.4.0
+
+concourse:
+  ## Configurations for the `web` component based on the possible flags configurable
+  ## through the `concourse web` command.
+  ##
+  web:
+    ## A name for this Concourse cluster, to be displayed on the dashboard page.
+    ##
+    clusterName: concourse
+
+    ## URL used to reach any ATC from the outside world.
+    ## This is *very* important for a proper authentication workflow as
+    ## browser redirects are based on the value set here.
+    ##
+    ## Example: http://ci.concourse-ci.org
+    ##
+    externalUrl: https://{{ requiredEnv "CONCOURSE_DNS" }}
+
+    postgres:
+      ## The host to connect to.
+      ##
+      host: postgres-postgresql
+
+    kubernetes:
+      createTeamNamespaces: false
+
+    auth:
+      mainTeam:
+        localUser: admin
+        oidc:
+          user: {{ requiredEnv "CONCOURSE_OIDC_USER" }}
+
+      oidc:
+        enabled: true
+        displayName: "PKS Auth"
+        issuer: {{ requiredEnv "UAA_URL" }}/oauth/token
+        scope: "openid,roles,uaa.user"
+        userNameKey: user_name
+
+  worker:
+    baggageclaim:
+      ## Driver to use for managing volumes.
+      ## Possible values: detect, naive, btrfs, and overlay.
+      ##
+      driver: detect
+
+    garden:
+      dnsProxyEnable: false
+
+postgresql:
+  enabled: false
+
+persistence:
+  enabled: true
+
+  worker:
+    storageClass: vsphere-volume
+    size: 500Gi
+web:
+  ingress:
+    ## Enable Ingress.
+    ##
+    enabled: true
+
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+    ## Hostnames.
+    ## Must be provided if Ingress is enabled.
+    ## Example:
+    ##   - concourse.domain.com
+    ##
+    hosts:
+      - {{ requiredEnv "CONCOURSE_DNS" }}
+
+    tls:
+      - hosts:
+          - {{ requiredEnv "CONCOURSE_DNS" }}
+
+worker:
+  env:
+    - name: "CONCOURSE_GARDEN_DNS_PROXY_ENABLE"
+      value: "false"
+    - name: "CONCOURSE_WORKER_GARDEN_DNS_PROXY_ENABLE"
+      value: "false"
+
+secrets:
+  localUsers: admin:{{ requiredEnv "CONCOURSE_ADMIN_PASSWORD" }}
+
+  hostKey: {{ requiredEnv "CONCOURSE_HOST_KEY_PRIVATE" | quote  }}
+
+  hostKeyPub: {{ requiredEnv "CONCOURSE_HOST_KEY_PUB" | quote  }}
+
+  sessionSigningKey: {{ requiredEnv "CONCOURSE_SESSION_KEY_PRIVATE" | quote }}
+
+  workerKey: {{ requiredEnv "CONCOURSE_WORKER_KEY_PRIVATE" | quote  }}
+
+  workerKeyPub: {{ requiredEnv "CONCOURSE_WORKER_KEY_PUB" | quote  }}
+
+  postgresUser: postgres
+  postgresPassword: {{ requiredEnv "CONCOURSE_POSTGRES_ADMIN_PASSWORD" }}
+
+  oidcClientId: {{ requiredEnv "CONCOURSE_OIDC_CLIENT_ID" }}
+  oidcClientSecret: {{ requiredEnv "CONCOURSE_OIDC_CLIENT_SECRET" }}
+  # oidcCaCert:
+
+## For Kubernetes RBAC support:
+##
+rbac:
+  ## Enable the creation of RBAC resources.
+  ##
+  create: true

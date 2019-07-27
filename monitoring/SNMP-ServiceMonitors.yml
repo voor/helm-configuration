@@ -1,0 +1,44 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: poeswitch-snmp-exporter
+  namespace: monitoring
+  labels:
+    app: prometheus-snmp-exporter
+    prometheus: monitoring
+    heritage: kustomize
+    release: monitoring
+spec:
+  endpoints:
+    - port: http
+      honorLabels: true
+      path: /snmp
+      scrapeTimeout: 10s
+      params:
+        module:
+          - ubiquiti_unifi
+          - if_mib
+        target:
+          - 192.168.2.123
+          # - unifi.device.planetvoor.com
+          # - upstairs.device.planetvoor.com
+          # - basement.device.planetvoor.com
+          # - backyard.device.planetvoor.com
+          # - mainfloor.device.planetvoor.com
+          # - switch.device.planetvoor.com
+      relabelings:
+        - sourceLabels: [__param_target]
+          targetLabel: job
+        - sourceLabels: [__param_target]
+          targetLabel: instance
+        - sourceLabels: [__param_target]
+          targetLabel: snmp_device
+        - replacement: "Basement AP"
+          targetLabel: snmp_name
+  namespaceSelector:
+    matchNames:
+      - monitoring
+  selector:
+    matchLabels:
+      app: prometheus-snmp-exporter
+      release: monitoring

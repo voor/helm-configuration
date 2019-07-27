@@ -1,0 +1,27 @@
+gitlabUrl: https://{{ requiredEnv "GITLAB_DNS" }}
+
+runnerRegistrationToken: {{ requiredEnv "GITLAB_RUNNER_REGISTRATION_TOKEN" }}
+
+rbac:
+  create: true
+
+runners:
+  image: ubuntu:bionic
+  privileged: true
+
+  cache:
+    ## General settings
+    cacheType: s3
+    cachePath: "gitlab/runner"
+    cacheShared: true
+
+    ## S3 settings
+    s3ServerAddress: {{ requiredEnv "MINIO_DNS" }}
+    s3BucketName: "gitlab-runner-storage"
+    s3BucketLocation: {{ requiredEnv "MINIO_DNS" }}
+    s3CacheInsecure: false
+    secretName: s3access
+
+envVars:
+  - name: LISTEN_ADDRESS
+    value: ":9252"

@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: gitaly-0
+  labels:
+    type: vmdk
+    storage: disk
+    name: gitaly
+    app: gitaly
+    release: gitlab
+spec:
+  capacity:
+    storage: 50Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  vsphereVolume:
+    volumePath: "[storage01] volumes/gitlab-gitaly"
+    fsType: ext4
