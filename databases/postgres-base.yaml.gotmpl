@@ -1,0 +1,28 @@
+volumePermissions:
+  enabled: true
+
+securityContext:
+  enabled: true
+  fsGroup: 1000
+  runAsUser: 1000
+
+persistence:
+  enabled: true
+  storageClass: vsphere-volume
+
+  accessModes:
+    - ReadWriteOnce
+  size: 2Gi
+
+metrics:
+  enabled: true
+
+  securityContext:
+    enabled: true
+    runAsUser: 1000
+
+  serviceMonitor:
+    enabled: true
+    namespace: "monitoring"
+    additionalLabels:
+      prometheus: monitoring

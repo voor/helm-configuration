@@ -28,4 +28,10 @@ metrics:
     enabled: true
     runAsUser: 1000
 
+  serviceMonitor:
+    enabled: true
+    namespace: "monitoring"
+    additionalLabels:
+      prometheus: monitoring
+
 postgresqlDatabase: gitlab

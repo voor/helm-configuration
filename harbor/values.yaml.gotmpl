@@ -1,0 +1,55 @@
+expose:
+  tls:
+    # Fill the name of secret if you want to use your own TLS certificate.
+    # The secret must contain keys named:
+    # "tls.crt" - the certificate
+    # "tls.key" - the private key
+    # "ca.crt" - the certificate of CA
+    # These files will be generated automatically if the "secretName" is not set
+    secretName: "harbor-ingress"
+  ingress:
+    hosts:
+      core: {{ requiredEnv "HARBOR_DNS" }}
+      notary: {{ requiredEnv "HARBOR_NOTARY_DNS" }}
+    annotations:
+      ingress.kubernetes.io/ssl-redirect: "true"
+      ingress.kubernetes.io/proxy-body-size: "0"
+      nginx.ingress.kubernetes.io/ssl-redirect: "true"
+      nginx.ingress.kubernetes.io/proxy-body-size: "0"
+      kubernetes.io/ingress.class: nginx
+      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+
+harborAdminPassword: {{ requiredEnv "HARBOR_ADMIN_PASSWORD" }}
+externalURL: https://{{ requiredEnv "HARBOR_DNS" }}
+
+secretKey: {{ requiredEnv "HARBOR_SECRET_KEY" }}
+
+persistence:
+  persistentVolumeClaim:
+    registry:
+      storageClass: vsphere-volume
+      size: 50Gi
+    chartmuseum:
+      storageClass: vsphere-volume
+      size: 1Gi
+    jobservice:
+      storageClass: vsphere-volume
+    redis:
+      storageClass: vsphere-volume
+
+# Generated, so we need to hold static.
+core:
+  secret: {{ requiredEnv "HARBOR_INTERNAL_SECRET" }}
+registry:
+  secret: {{ requiredEnv "HARBOR_INTERNAL_SECRET" }}
+jobservice:
+  secret: {{ requiredEnv "HARBOR_INTERNAL_SECRET" }}
+notary:
+  secretName: notary-certs
+
+database:
+  type: external
+  external:
+    host: "harbor-postgres"
+    username: "postgres"
+    password: {{ requiredEnv "HARBOR_DATABASE_PASSWORD" }}

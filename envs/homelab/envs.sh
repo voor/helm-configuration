@@ -77,16 +77,15 @@ export GRAFANA_OIDC_CLIENT_SECRET=${GRAFANA_OIDC_CLIENT_SECRET} #CHANGEME
 # hostname to register in DNS
 export HARBOR_DNS=harbor.${EXTERNAL_DNS_DOMAIN}
 export HARBOR_NOTARY_DNS=notary.${EXTERNAL_DNS_DOMAIN}
-# GCS bucket to store images in
-export HARBOR_GCS_BUCKET=cicd-harbor
+
 # A bunch of passwords and secrets that you should change
 export HARBOR_ADMIN_PASSWORD=${HARBOR_ADMIN_PASSWORD}
 export HARBOR_SECRET_KEY=${HARBOR_SECRET_KEY}
-export HARBOR_DATABASE_PASSWORD=database-password
+export HARBOR_DATABASE_PASSWORD=${HARBOR_DATABASE_PASSWORD}
 export HARBOR_INTERNAL_SECRET=${HARBOR_INTERNAL_SECRET}
 # UAA/OIDC client id/secret to use to auth against UAA
-export HARBOR_UAA_CLIENT_ID=harbor-client
-export HARBOR_UAA_CLIENT_SECRET=Fm0lzbqHHp44nc2DW098WyVE53
+export HARBOR_UAA_CLIENT_ID=${HARBOR_UAA_CLIENT_ID}
+export HARBOR_UAA_CLIENT_SECRET=${HARBOR_UAA_CLIENT_SECRET}
 
 ## GitLab
 ##############################

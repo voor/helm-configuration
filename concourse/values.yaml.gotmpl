@@ -38,6 +38,9 @@ concourse:
         scope: "openid,roles,uaa.user"
         userNameKey: user_name
 
+    prometheus:
+      enabled: true
+
   worker:
     baggageclaim:
       ## Driver to use for managing volumes.
