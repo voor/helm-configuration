@@ -50,6 +50,6 @@ notary:
 database:
   type: external
   external:
-    host: "harbor-postgres"
+    host: "harbor-postgres-postgresql"
     username: "postgres"
     password: {{ requiredEnv "HARBOR_DATABASE_PASSWORD" }}

@@ -72,10 +72,12 @@ uaac client add ${HARBOR_UAA_CLIENT_ID} --scope openid \
   --secret "${HARBOR_UAA_CLIENT_SECRET}" \
   --authorities clients.read,clients.secret,uaa.resource,scim.write,openid,scim.read
 
-# Modify auth.json first.
-curl -X PUT -u "admin:${HARBOR_ADMIN_PASSWORD}" -H "Content-Type: application/json" -ki "https://${HARBOR_DNS}/api/configurations" -d @harbor/auth.json
+curl -X PUT -u "admin:${HARBOR_ADMIN_PASSWORD}" -H "Content-Type: application/json" -ki "https://${HARBOR_DNS}/api/configurations" -d "$(sed -e "s|\${HARBOR_UAA_CLIENT_SECRET}|${HARBOR_UAA_CLIENT_SECRET}|" -e "s|\${UAA_URL}|${UAA_URL}|" harbor/auth.example.json)"
 
 helmfile -l name=harbor sync
+
+# Log in once with your UAA user then log out
+# Log back in with the admin account and make your user an Admin.
 ```
 
 # Installing Concourse
@@ -121,11 +123,11 @@ kubectl create secret -n gitlab-system tls gitlab-ingress --cert=fullchain.pem -
 echo -n $PASSWORD > password
 kubectl create secret generic -n gitlab-system smtp-password --from-file=password -o yaml --dry-run | kubectl replace -f -
 rm password
-sed "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" rails.example.yml | sed "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" > rails.yml
+sed -e "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" -e "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" -e "s/\$MINIO_DNS/$MINIO_DNS/" rails.example.yml > rails.yml
 kubectl create secret -n gitlab-system generic objectstore \
     --from-file=connection=rails.yml
 rm rails.yml
-sed "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" registry.example.yml | sed "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" > registry.yml
+sed "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" -e "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" -e "s/\$MINIO_DNS/$MINIO_DNS/" registry.example.yml > registry.yml
 kubectl create secret -n gitlab-system generic registry-storage \
     --from-file=config=registry.yml
 rm registry.yml

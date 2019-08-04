@@ -121,5 +121,5 @@ registry:
 
 redis:
   persistence:
-    storageClass: {{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
+    storageClass: slow #{{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
     size: 5Gi

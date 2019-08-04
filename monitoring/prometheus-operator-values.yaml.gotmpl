@@ -81,11 +81,7 @@ prometheus:
 grafana:
   adminPassword: {{ requiredEnv "GRAFANA_ADMIN_PASSWORD" }}
   persistence:
-    enabled: true
-    size: 8Gi
-    storageClassName: {{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
-    accessModes:
-      - ReadWriteOnce
+    enabled: false
   ingress:
     enabled: true
 

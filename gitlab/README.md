@@ -9,11 +9,11 @@ kubectl create secret -n gitlab-system tls gitlab-ingress --cert=certs/planetvoo
 echo -n $PASSWORD > password
 kubectl create secret generic -n gitlab-system smtp-password --from-file=password -o yaml --dry-run | kubectl replace -f -
 rm password
-sed "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" rails.example.yml | sed "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" | sed "s/\$MINIO_DNS/$MINIO_DNS/" > rails.yml
+sed -e "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" -e "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" -e "s/\$MINIO_DNS/$MINIO_DNS/" rails.example.yml > rails.yml
 kubectl create secret -n gitlab-system generic objectstore \
     --from-file=connection=rails.yml
 rm rails.yml
-sed "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" registry.example.yml | sed "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" | sed "s/\$MINIO_DNS/$MINIO_DNS/" > registry.yml
+sed "s/\$MINIO_ACCESS_KEY/$MINIO_ACCESS_KEY/" -e "s/\$MINIO_SECRET_KEY/$MINIO_SECRET_KEY/" -e "s/\$MINIO_DNS/$MINIO_DNS/" registry.example.yml > registry.yml
 kubectl create secret -n gitlab-system generic registry-storage \
     --from-file=config=registry.yml
 rm registry.yml
