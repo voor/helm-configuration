@@ -165,7 +165,7 @@ releases:
 
   # Observability
   - name: monitoring
-    chart: ../charts/stable/prometheus-operator
+    chart: stable/prometheus-operator
     namespace: monitoring
     values:
       - monitoring/prometheus-operator-values.yaml.gotmpl
