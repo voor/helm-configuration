@@ -17,6 +17,10 @@ helmDefaults:
   kubeContext: {{ requiredEnv "CLUSTER_NAME" }}
 
 releases:
+  # - name: deluge
+  #   chart: ./deluge/deluge
+  #   namespace: deluge
+
   # Nginx Ingress and MetalLB
   - name: nginx-ingress
     chart: stable/nginx-ingress
@@ -76,6 +80,9 @@ releases:
 
         postgresqlDatabase: registry
 
+        persistence:
+          existingClaim: data-harbor-postgres-postgresql-0
+
         initdbScripts:
           db-init.sql: |
             CREATE DATABASE notary_server;
@@ -99,6 +106,9 @@ releases:
           postgresql:
             existingSecret: concourse-postgres-postgresql-admin
 
+        persistence:
+          existingClaim: data-postgres-postgresql-0
+
         postgresqlDatabase: atc
 
   - name: concourse
@@ -120,6 +130,7 @@ releases:
     chart: stable/postgresql
     namespace: gitlab-system
     values:
+      - databases/postgres-base.yaml.gotmpl
       - gitlab/postgres-values.yml.gotmpl
 
   - name: gitlab-runner

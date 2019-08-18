@@ -64,7 +64,7 @@ kubectl create ns harbor-system
 kubectl create secret -n harbor-system generic harbor-ingress --from-file=ca.crt=ca.pem --from-file=tls.crt=fullchain.pem --from-file=tls.key=privkey.pem
 kubectl create secret -n harbor-system generic notary-certs --from-file=ca=ca.crt --from-file=crt=server.crt --from-file=key=server.key
 
-kubectl create secret generic -n harbor-system harbor-postgres-postgresql-admin --from-literal=postgresql-password="${HARBOR_DATABASE_PASSWORD}"
+kubectl create secret generic -n harbor-system harbor-postgres-postgresql-admin --from-literal=postgresql-password="${HARBOR_DATABASE_PASSWORD}" --from-literal=postgresql-replication-password="${HARBOR_DATABASE_PASSWORD}"
 
 uaac client add ${HARBOR_UAA_CLIENT_ID} --scope openid \
   --authorized_grant_types client_credentials,password,refresh_token \

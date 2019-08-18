@@ -1,0 +1,21 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: concourse-web
+    release: "concourse"
+    heritage: "cli"
+    prometheus: monitoring
+  name: concourse-web
+  namespace: monitoring
+spec:
+  endpoints:
+  - interval: 30s
+    port: prometheus
+  namespaceSelector:
+    matchNames:
+    - concourse-system
+  selector:
+    matchLabels:
+      app: concourse-web
+      release: concourse

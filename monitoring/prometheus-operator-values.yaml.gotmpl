@@ -1,10 +1,21 @@
 commonLabels:
   prometheus: monitoring
 
+# PKS does not provide metrics for controller manager.
+kubeControllerManager:
+  enabled: false
+
+kubeScheduler:
+  enabled: false
+
+prometheusOperator:
+  admissionWebhooks:
+    enabled: false
+
 alertmanager:
   # Configured only for troubleshooting.
   ingress:
-    enabled: false
+    enabled: true
 
     annotations:
       kubernetes.io/ingress.class: nginx
@@ -25,7 +36,22 @@ alertmanager:
       - hosts:
           - alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
 
+  config:
+    global:
+      slack_api_url: {{ requiredEnv "SLACK_WEBHOOK_URL" }}
+    route:
+      receiver: 'slack'
+    receivers:
+    - name: 'null'
+    - name: 'slack'
+      slack_configs:
+      - channel: '#alerts'
+        send_resolved: true
+
+
+
   alertmanagerSpec:
+    externalUrl: https://alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
     logFormat: logfmt
     storage:
       volumeClaimTemplate:

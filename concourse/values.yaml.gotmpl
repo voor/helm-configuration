@@ -1,5 +1,3 @@
-imageTag: 5.4.0
-
 concourse:
   ## Configurations for the `web` component based on the possible flags configurable
   ## through the `concourse web` command.
@@ -46,7 +44,7 @@ concourse:
       ## Driver to use for managing volumes.
       ## Possible values: detect, naive, btrfs, and overlay.
       ##
-      driver: detect
+      driver: btrfs
 
     garden:
       dnsProxyEnable: false

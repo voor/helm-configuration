@@ -26,3 +26,10 @@ metrics:
     namespace: "monitoring"
     additionalLabels:
       prometheus: monitoring
+
+replication:
+  enabled: true
+  slaveReplicas: 1
+  synchronousCommit: "on"
+  numSynchronousReplicas: 1
+  user: postgres
