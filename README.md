@@ -85,7 +85,7 @@ helmfile -l name=harbor sync
 ```
 kubectl create ns concourse-system
 kubectl create ns concourse-main
-kubectl create secret generic -n concourse-system concourse-postgres-postgresql-admin --from-literal=postgresql-password="${CONCOURSE_POSTGRES_ADMIN_PASSWORD}"
+kubectl create secret generic -n concourse-system concourse-postgres-postgresql-admin --from-literal=postgresql-password="${CONCOURSE_POSTGRES_ADMIN_PASSWORD}" --from-literal=postgresql-replication-password="${CONCOURSE_POSTGRES_ADMIN_PASSWORD}" 
 
 uaac client add ${CONCOURSE_OIDC_CLIENT_ID} --scope openid,roles,uaa.user \
    --authorized_grant_types refresh_token,password,authorization_code \
