@@ -1,0 +1,3 @@
+.secure.envs.sh
+*.pem
+*.pub

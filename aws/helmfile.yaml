@@ -1,0 +1,24 @@
+releases:
+  # - name: kube2iam
+  #   chart: stable/kube2iam
+  #   namespace: kube-system
+  #   values:
+  #     - system/kube2iam.yaml.gotmpl
+      
+  - name: nginx-ingress
+    chart: stable/nginx-ingress
+    namespace: ingress
+    values:
+      - ingress/nginx-ingress.yaml.gotmpl
+
+  - name: external-dns
+    chart: stable/external-dns
+    namespace: ingress
+    values:
+      - ingress/external-dns.yaml.gotmpl
+
+  - name: monitoring
+    chart: stable/prometheus-operator
+    namespace: monitoring
+    values:
+      - monitoring/prometheus-operator.yaml.gotmpl

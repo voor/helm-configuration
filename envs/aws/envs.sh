@@ -2,7 +2,7 @@
 
 # relative or absolute path of your envs directory, effectively where the directory
 # containing this script sits relative to the helmfile dir.
-export ENV_DIR="./envs/homelab/"
+export ENV_DIR="./envs/aws/"
 
 # For keeping this in sync with what I personally use, I created another file and reference that first.
 # That's why you'll see a fair bit of self-referencing examples, just change those or follow this format.
@@ -16,7 +16,7 @@ export CLUSTER_NAME=${CLUSTER_NAME}
 #   and have access to wildcard certificates for it
 export BASE_DOMAIN=${BASE_DOMAIN}
 # the DNS name of your PKS cluster
-export PKS_HOSTNAME=pks.${BASE_DOMAIN}
+export PKS_HOSTNAME=${PKS_HOSTNAME}
 
 
 # full URL for UAA, should be okay to let it derive it.
@@ -32,7 +32,7 @@ export HELM_HOST=:44134
 export EXTERNAL_DNS_DOMAIN="${BASE_DOMAIN}"
 
 # k8s environment specific:
-export STORAGE_CLASS_NAME="vsphere-volume"
+export STORAGE_CLASS_NAME="ebs"
 
 export INGRESS_STATIC_IP="192.168.2.50"
 export LOAD_BALANCER_IP_RANGE="192.168.2.50-192.168.2.54"

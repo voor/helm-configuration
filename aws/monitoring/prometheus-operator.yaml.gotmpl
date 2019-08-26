@@ -12,80 +12,7 @@ prometheusOperator:
   admissionWebhooks:
     enabled: false
 
-alertmanager:
-  # Configured only for troubleshooting.
-  ingress:
-    enabled: true
-
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-
-    hosts:
-      - alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
-
-    ## Paths to use for ingress rules - one path should match the alertmanagerSpec.routePrefix
-    ##
-    paths:
-      - /
-
-    ## TLS configuration for Alertmanager Ingress
-    ## Secret must be manually created in the namespace
-    ##
-    tls:
-      - hosts:
-          - alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
-
-  config:
-    global:
-      slack_api_url: {{ requiredEnv "SLACK_WEBHOOK_URL" }}
-    route:
-      receiver: 'slack'
-    receivers:
-    - name: 'null'
-    - name: 'slack'
-      slack_configs:
-      - channel: '#alerts'
-        send_resolved: true
-
-
-
-  alertmanagerSpec:
-    externalUrl: https://alertmanager.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
-    logFormat: logfmt
-    storage:
-      volumeClaimTemplate:
-        spec:
-          storageClassName: {{ requiredEnv "STORAGE_CLASS_NAME" }}
-          accessModes: ["ReadWriteOnce"]
-          resources:
-            requests:
-              storage: 10Gi
-        selector: {}
-
 prometheus:
-  # Configured only for troubleshooting.
-  ingress:
-    enabled: false
-
-    annotations:
-      kubernetes.io/ingress.class: nginx
-      nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
-
-    hosts:
-      - prometheus.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
-
-    ## Paths to use for ingress rules - one path should match the alertmanagerSpec.routePrefix
-    ##
-    paths:
-      - /
-
-    ## TLS configuration for Alertmanager Ingress
-    ## Secret must be manually created in the namespace
-    ##
-    tls:
-      - hosts:
-          - prometheus.{{ requiredEnv "EXTERNAL_DNS_DOMAIN" }}
 
   prometheusSpec:
     serviceMonitorSelectorNilUsesHelmValues: false
@@ -106,20 +33,23 @@ prometheus:
 
 grafana:
   adminPassword: {{ requiredEnv "GRAFANA_ADMIN_PASSWORD" }}
+
   persistence:
     enabled: false
+
   ingress:
     enabled: true
 
     annotations:
       kubernetes.io/ingress.class: nginx
       nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+      external-dns.alpha.kubernetes.io/alias: "true"
 
     hosts:
-      - {{ requiredEnv "GRAFANA_DNS" }}
+      - grafana.ing.dev.pivdevops.com
     tls:
       - hosts:
-          - {{ requiredEnv "GRAFANA_DNS" }}
+          - grafana.ing.dev.pivdevops.com
 
   grafana.ini:
     server:
@@ -153,6 +83,6 @@ grafana:
     users:
       allow_sign_up: true
       auto_assign_org: true
-      auto_assign_org_role: Admin
+      auto_assign_org_role: Viewer
     auth:
       oauth_auto_login: true

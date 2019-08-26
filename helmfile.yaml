@@ -197,7 +197,7 @@ releases:
           accessModes:
             - ReadWriteOnce
           size: 300Gi
-          storageClassName: {{ requiredEnv "VSPHERE_STORAGE_CLASS_NAME" }}
+          storageClassName: {{ requiredEnv "STORAGE_CLASS_NAME" }}
 
   - name: fluentd
     chart: stable/fluentd

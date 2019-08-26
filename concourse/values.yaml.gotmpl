@@ -39,6 +39,8 @@ concourse:
     prometheus:
       enabled: true
 
+    containerPlacementStrategy: fewest-build-containers
+
   worker:
     baggageclaim:
       ## Driver to use for managing volumes.
@@ -85,6 +87,7 @@ web:
           - {{ requiredEnv "CONCOURSE_DNS" }}
 
 worker:
+  replicas: 3
   env:
     - name: "CONCOURSE_GARDEN_DNS_PROXY_ENABLE"
       value: "false"
