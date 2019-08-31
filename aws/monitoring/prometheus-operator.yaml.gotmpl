@@ -46,10 +46,10 @@ grafana:
       external-dns.alpha.kubernetes.io/alias: "true"
 
     hosts:
-      - grafana.ing.dev.pivdevops.com
+      - {{ requiredEnv "GRAFANA_DNS" }}
     tls:
       - hosts:
-          - grafana.ing.dev.pivdevops.com
+          - {{ requiredEnv "GRAFANA_DNS" }}
 
   grafana.ini:
     server:
@@ -85,4 +85,4 @@ grafana:
       auto_assign_org: true
       auto_assign_org_role: Viewer
     auth:
-      oauth_auto_login: true
+      oauth_auto_login: false

@@ -4,7 +4,7 @@ releases:
   #   namespace: kube-system
   #   values:
   #     - system/kube2iam.yaml.gotmpl
-      
+
   - name: nginx-ingress
     chart: stable/nginx-ingress
     namespace: ingress
@@ -22,3 +22,11 @@ releases:
     namespace: monitoring
     values:
       - monitoring/prometheus-operator.yaml.gotmpl
+
+  ### Application
+
+  - name: rabbitmq
+    chart: stable/rabbitmq
+    namespace: app
+    values:
+      - rabbit/rabbitmq.yaml.gotmpl

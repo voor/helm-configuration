@@ -1,0 +1,31 @@
+replicas: 3
+
+volumePermissions:
+  enabled: true
+
+metrics:
+  enabled: true
+  serviceMonitor:
+    enabled: true
+    namespace: "monitoring"
+    additionalLabels:
+      prometheus: monitoring
+
+ingress:
+  enabled: true
+  tls: true
+  hostName: {{ requiredEnv "RABBITMQ_DNS" }}
+
+resources:
+  requests:
+    memory: 256Mi
+    cpu: 100m
+
+rabbitmq:
+  password: {{ requiredEnv "RABBITMQ_PASSWORD" }}
+  erlangCookie: {{ requiredEnv "RABBITMQ_ERLANGCOOKIE" }}
+
+  plugins: "rabbitmq_management rabbitmq_peer_discovery_k8s mqtt"
+
+persistence:
+  storageClass: {{ requiredEnv "STORAGE_CLASS_NAME" }}
