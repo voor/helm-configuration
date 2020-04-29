@@ -1,4 +1,4 @@
-# PKS (Kubernetes) Configurations
+# Helmfile Kubernetes Configurations
 
 Various Kubernetes configurations you can use in your clusters to achieve various results.
 
